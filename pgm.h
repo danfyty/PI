@@ -19,4 +19,5 @@ class Pgm{
     static Pgm* Pgm_from_file(const char* filename);
     void write_to_file(const char filename[]);
 };
+
 #endif
