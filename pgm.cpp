@@ -9,17 +9,41 @@
 using namespace std;
 
 Pgm::Pgm() {
+    height=width=maxval=0;
 }
-Pgm::Pgm(uint32_t width, uint32_t height, uint8_t maxval):height(height), width(width), maxval(maxval) {
-    grid=new uint8_t*[height];
+Pgm::Pgm(uint32_t width, uint32_t height, uint32_t maxval):height(height), width(width), maxval(maxval) {
+    grid=new uint32_t*[height];
     for(size_t i=0;i<height;i++)
-        grid[i]=new uint8_t[width];
+        grid[i]=new uint32_t[width];
 }
-Pgm::~Pgm() {
+
+void Pgm::release_grid() {
     for(size_t i=0;i<height;i++)
         delete[] grid[i];
     delete[] grid;
 }
+
+Pgm::~Pgm() {
+    release_grid();
+}
+
+Pgm& Pgm::operator=(const Pgm &rhs){
+    release_grid();
+    height=rhs.get_height();
+    width=rhs.get_width();
+    maxval=rhs.get_maxval();
+    type=rhs.get_type();
+
+    grid=new uint32_t*[height];
+    for(size_t i=0;i<height;i++)
+        grid[i]=new uint32_t[width];
+
+    for(int i=0;i<height;i++)
+        for(int j=0;j<width;j++)
+            grid[i][j]=rhs.grid[i][j];
+    return *this;
+}
+
 Pgm* Pgm::Pgm_from_file(const char filename[]) {
     ifstream fpin(filename);
     if(!fpin.is_open())
@@ -28,7 +52,7 @@ Pgm* Pgm::Pgm_from_file(const char filename[]) {
 
     string line, str, type;
     Pgm *ret=NULL;
-    uint8_t px_read=0; 
+    uint32_t px_read=0; 
     size_t lr=0;//pixes read so far, lines read so far.
     bool will_read_maxval=false;
 
@@ -40,7 +64,7 @@ Pgm* Pgm::Pgm_from_file(const char filename[]) {
         else if(lr==1) {
             stringstream IN(line);
             uint32_t height, width; 
-            uint8_t maxval=255;
+            uint32_t maxval=255;
             int cx=0, tmp;
             while(IN>>tmp) {
                 if(cx==0)
@@ -81,12 +105,12 @@ void Pgm::write_to_file(const char filename[]) {
     if(!fpout.is_open())
         return ;
     fpout<<type<<'\n';
-    fpout<<width<<' '<<height<<' '<<maxval<<'\n';
+    fpout<<(int)width<<' '<<(int)height<<' '<<(int)maxval<<'\n';
     for(size_t i=0;i<height;i++) {
         for(size_t j=0;j<width;j++) {
             if((i*width+j)%20==0)
                 fpout<<'\n';
-            fpout<<(uint8_t)grid[i][j]<<' ';
+            fpout<<grid[i][j]<<' ';
         }
     }
     fpout.close();
