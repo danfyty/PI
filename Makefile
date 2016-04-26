@@ -1,5 +1,5 @@
 CC=g++
-CXX_FLAGS=-std=c++0x
+CXX_FLAGS=-std=c++0x -Wall
 FLAGS=$(CXX_FLAGS) -O2
 
 t5: pgm.o filters.o t5.cpp

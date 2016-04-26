@@ -1,9 +1,12 @@
 #include <iostream>
 #include <vector>
 #include <fstream>
+#include <cctype>
 #include <sstream>
 #include <cstdint>
 #include <cstring>
+#include <cstdio>
+#include <cstdlib>
 #include "filters.h"
 #include "pgm.h"
 
@@ -11,7 +14,7 @@ using namespace std;
 
 void usage() {
 	cout<<"Para Compilar:\nmake t5\n";
-	cout<<"./t5 img.pgm filtro{Media, Mediana, Gauss} parametro\n";
+	cout<<"./t5 entrada.pgm filtro{Media, Mediana, Gauss} parametro saida.pgm\n";
 }
 
 /*
@@ -31,31 +34,27 @@ int main(int argc, char **argv) {
 		usage();
 		return EXIT_SUCCESS;
 	}
-    if(strcmp(argv[2], "gauss")==0) {
+    if(strcasecmp(argv[2], "gauss")==0) {
         size_t sig;
-        sscanf(argv[3], "%u", &sig);
+        sscanf(argv[3], "%zu", &sig);
         Pgm *ret=gaussian(img,sig);
         ret->write_to_file(argv[4]);
         delete ret;
     }
-    else if(strcmp(argv[2], "media")==0) {
+    else if(strcasecmp(argv[2], "media")==0) {
         size_t n;
-        sscanf(argv[3], "%u", &n);
+        sscanf(argv[3], "%zu", &n);
         Pgm *ret=median(img,n);
         ret->write_to_file(argv[4]);
         delete ret;
     }
-    else if(strcmp(argv[2], "mean")==0){
+    else if(strcasecmp(argv[2], "mediana")==0){
         size_t n;
-        sscanf(argv[3], "%u", &n);
+        sscanf(argv[3], "%zu", &n);
         Pgm *ret=mean(img,n);
         ret->write_to_file(argv[4]);
         delete ret;
     }
-
-
-
     delete img;
-
-	return 0;
+	return EXIT_SUCCESS;
 }

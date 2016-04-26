@@ -48,7 +48,7 @@ get_gaussian_filter_mask(int n, size_t sig) {
     n/=2;
 
     size_t sqr_sig=sig*sig;
-    double aux, k=0;
+    double aux;
     double mm=1;
     for(int y=-n;y<=n;++y) {
         for(int x=-n;x<=n;++x) {
@@ -58,17 +58,12 @@ get_gaussian_filter_mask(int n, size_t sig) {
                 mm=mask[y+n][x+n];
         }
     }
-
     for(int y=-n;y<=n;++y) {
-        for(int x=-n;x<=n;++x) {
+        for(int x=-n;x<=n;++x) 
             mask[y+n][x+n]/=mm;
-            //std::cout<<mask[y+n][x+n]<<" ";
-        }
-        //std::cout<<"\n";
     }
     return mask;
 }
-
 
 Pgm* gaussian(Pgm *img, size_t sig) {
     if(img==NULL)
@@ -81,8 +76,8 @@ Pgm* gaussian(Pgm *img, size_t sig) {
 
     n/=2;
     double s=0;
-    for(int i=0;i<mask.size();i++)
-        for(int j=0;j<mask[i].size();j++)
+    for(size_t i=0;i<mask.size();i++)
+        for(size_t j=0;j<mask[i].size();j++)
             s+=mask[i][j];
 
     for(size_t i=n;i<img->get_height()-n;++i)

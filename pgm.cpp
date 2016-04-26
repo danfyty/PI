@@ -10,6 +10,7 @@ using namespace std;
 
 Pgm::Pgm() {
     height=width=maxval=0;
+    grid=NULL;
 }
 Pgm::Pgm(uint32_t width, uint32_t height, uint32_t maxval):height(height), width(width), maxval(maxval) {
     grid=new uint32_t*[height];
@@ -18,9 +19,12 @@ Pgm::Pgm(uint32_t width, uint32_t height, uint32_t maxval):height(height), width
 }
 
 void Pgm::release_grid() {
-    for(size_t i=0;i<height;i++)
-        delete[] grid[i];
-    delete[] grid;
+    if(grid!=NULL) {
+        for(size_t i=0;i<height;i++)
+            delete[] grid[i];
+        delete[] grid;
+        grid=NULL;
+    }
 }
 
 Pgm::~Pgm() {
@@ -33,13 +37,12 @@ Pgm& Pgm::operator=(const Pgm &rhs){
     width=rhs.get_width();
     maxval=rhs.get_maxval();
     type=rhs.get_type();
-
     grid=new uint32_t*[height];
     for(size_t i=0;i<height;i++)
         grid[i]=new uint32_t[width];
 
-    for(int i=0;i<height;i++)
-        for(int j=0;j<width;j++)
+    for(size_t i=0;i<height;i++)
+        for(size_t j=0;j<width;j++)
             grid[i][j]=rhs.grid[i][j];
     return *this;
 }
@@ -48,7 +51,6 @@ Pgm* Pgm::Pgm_from_file(const char filename[]) {
     ifstream fpin(filename);
     if(!fpin.is_open())
         return NULL;
-
 
     string line, str, type;
     Pgm *ret=NULL;
@@ -63,7 +65,7 @@ Pgm* Pgm::Pgm_from_file(const char filename[]) {
             type=line;
         else if(lr==1) {
             stringstream IN(line);
-            uint32_t height, width; 
+            uint32_t height=0, width=0; 
             uint32_t maxval=255;
             int cx=0, tmp;
             while(IN>>tmp) {
